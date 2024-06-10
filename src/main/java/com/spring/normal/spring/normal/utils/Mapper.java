@@ -15,17 +15,13 @@ public class Mapper {
 
     private final ObjectMapper objectMapper;
 
-    public Optional<Object> toClassWithMatch(String json, List<ClassMatcherPredicate<?>> options) {
-        return toJsonNode(json)
-                .flatMap(jsonNode -> toClassWithMatch(jsonNode, options));
-    }
 
-    public Optional<Object> toClassWithMatch(JsonNode jsonNode, List<ClassMatcherPredicate<?>> options) {
+    public <R> Optional<Object> toClassWithMatch(R target, List<ClassMatcherPredicate<?, R>> options) {
 
         return options.stream()
-                .filter(validator -> validator.match(jsonNode))
+                .filter(validator -> validator.match(target))
                 .findFirst()
-                .flatMap(matcher -> mapToClass(jsonNode, matcher.targetClass()));
+                .flatMap(matcher -> mapToClass(target, matcher.targetClass()));
     }
 
     public <T> Optional<T> mapToClass(Object object, Class<T> targetClass) {
